@@ -7,6 +7,9 @@ Sinatraで実装した簡易Webアプリケーションです。
 
 注: ruby-1.9.3がインストールされており、実行可能であることを前提にしています。
 
+rubyの実行環境構築については、私がQiitaに投稿した[こちらの記事](http://qiita.com/items/1d38dfceba03c717bf21)が参考になると思います。
+
+
 ```sh
   # git clone または ダウンロードして展開したディレクトリで以下のコマンドを実行
   $ bundle install --path .bundle
