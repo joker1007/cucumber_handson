@@ -1,0 +1,82 @@
+!!!
+%html
+  %head
+    %meta{charset: "utf-8"}
+    %link{href: "/bootstrap/css/bootstrap.min.css", rel: "stylesheet"}
+    %title Index
+  %body
+    .container-fluid
+      .row-fluid
+        %h1 自販機
+        - if @juice
+          .alert.alert-success
+            #{@juice.name}を購入しました。(お釣り: #{@payback} 円)
+        - if @added
+          .alert.alert-success
+            - @added.group_by(&:name).each do |name, juices|
+              #{name} を #{juices.size} 本追加しました
+        %table.table
+          %thead
+            %tr
+              %th #
+              %th 名称
+              %th 価格
+              %th 在庫
+              %th 購入
+          %tbody
+            - VENDING_MACHINE.juice_stocks.group_by(&:name).each.with_index(1) do |(name, juices), idx|
+              %tr.juice
+                %td= idx
+                %td.name
+                  = name
+                %td.price
+                  #{juices.first.price} 円
+                %td.stock
+                  #{juices.size}
+                %td.purchase
+                  = purchase_button(juices.first)
+
+        %h3 代金を投入する (現在: #{VENDING_MACHINE.total_accepted_money} 円)
+        %form{method: "POST", action: "/insert_money"}
+          %label{for: "money-10", style: "display: inline"} 10 円
+          %input#money-10{type: "radio", name: "money", value: "10"}
+          %label{for: "money-50", style: "display: inline"} 50 円
+          %input#money-50{type: "radio", name: "money", value: "50"}
+          %label{for: "money-100", style: "display: inline"} 100 円
+          %input#money-100{type: "radio", name: "money", value: "100"}
+          %label{for: "money-1000", style: "display: inline"} 1000 円
+          %input#money-1000{type: "radio", name: "money", value: "1000"}
+          %input{type: "submit", value: "投入"}
+
+        %h3 払い戻し
+        %form{method: "GET", action: "/refund"}
+          %input{type: "submit", value: "払い戻し"}
+          %table.table
+            %thead
+              %tr
+                %th 支払い合計
+                %th 1000円
+                %th 500円
+                %th 100円
+                %th 50円
+                %th 10円
+            %tbody
+              %tr
+                - [:all,1000,500,100,50,10].each do |coin|
+                  - if @refund
+                    %td= @refund[coin]
+                  - else
+                    %td 0
+
+        %h3 ジュースを追加する
+        %form{method: "POST", action: "/add_juice"}
+          %label{for: "juice-name-input", style: "display: inline"} 名前
+          %input#juice-name-input{type: "text", name: "juice[name]", value: ""}
+          %br/
+          %label{for: "juice-price-input", style: "display: inline"} 価格
+          %input#juice-price-input{type: "number", name: "juice[price]", value: ""}
+          %br/
+          %label{for: "juice-count-input", style: "display: inline"} 本数
+          %input#juice-count-input{type: "number", name: "count", value: ""}
+          %br/
+          %input{type: "submit", value: "追加"}
